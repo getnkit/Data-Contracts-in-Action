@@ -1,0 +1,111 @@
+{
+  "spec_version": "1.0.0",
+  "contract_id": "customer_profile_v1",
+  "name": "customer_profile",
+  "version": "1.0.0",
+  "status": "active",
+  "domain": "customer",
+  "description": "Data contract for the customer profile asset used by downstream customer analytics and reporting.",
+  "owners": {
+    "producer": "customer-app-team",
+    "consumer": "data-team",
+    "steward": "customer-domain-owner"
+  },
+  "asset": {
+    "source_system": "customer_app",
+    "source_object": "customer_profile",
+    "asset_type": "table",
+    "grain": "one row per customer",
+    "business_key": ["customer_id"],
+    "watermark_column": "updated_at",
+    "load_pattern": "incremental"
+  },
+  "schema": {
+    "columns": [
+      {
+        "name": "customer_id",
+        "type": "string",
+        "required": true,
+        "nullable": false,
+        "business_key": true,
+        "description": "Customer identifier. This field must not be null and is used as the business key."
+      },
+      {
+        "name": "customer_name",
+        "type": "string",
+        "required": true,
+        "nullable": false,
+        "description": "Customer name."
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "required": false,
+        "nullable": true,
+        "description": "Customer email address. This field can be used for contact channel analysis but is not required in this demo."
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "required": true,
+        "nullable": false,
+        "allowed_values": ["ACTIVE", "INACTIVE"],
+        "description": "Customer status values supported by downstream consumers."
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp",
+        "required": true,
+        "nullable": false,
+        "description": "Timestamp when the record was last updated. This field is used for incremental loading."
+      }
+    ]
+  },
+  "quality_rules": [
+    {
+      "rule_id": "customer_id_not_null",
+      "type": "not_null",
+      "column": "customer_id",
+      "severity": "error",
+      "action": "quarantine"
+    },
+    {
+      "rule_id": "status_allowed_values",
+      "type": "allowed_values",
+      "column": "status",
+      "severity": "error",
+      "action": "quarantine"
+    },
+    {
+      "rule_id": "updated_at_not_null",
+      "type": "not_null",
+      "column": "updated_at",
+      "severity": "error",
+      "action": "quarantine"
+    }
+  ],
+  "sla": {
+    "refresh_frequency": "daily",
+    "allowed_delay_hours": 24,
+    "timezone": "Asia/Bangkok"
+  },
+  "change_policy": {
+    "breaking_changes_require_approval": true,
+    "breaking_change_examples": [
+      "remove a required column",
+      "rename the business key",
+      "change a data type in a non-compatible way",
+      "change allowed values without downstream support",
+      "stop updating the watermark column"
+    ],
+    "non_breaking_change_examples": [
+      "add an optional nullable column",
+      "add a metadata column that downstream consumers can ignore"
+    ]
+  },
+  "enforcement": {
+    "schema_check": "fail",
+    "runtime_validation": "quarantine_invalid_records",
+    "alert_channel": "console"
+  }
+}

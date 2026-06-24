@@ -1,0 +1,45 @@
+name: Contract check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  contract-check:
+    name: Run data contract checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check compatible schema passes
+        run: |
+          python scripts/data_contract_demo.py schema-check \
+            --contract contracts/customer_profile.contract.json \
+            --schema actual_schemas/customer_profile.actual.ok.json
+
+      - name: Check breaking schema fails
+        run: |
+          set +e
+
+          python scripts/data_contract_demo.py schema-check \
+            --contract contracts/customer_profile.contract.json \
+            --schema actual_schemas/customer_profile.actual.breaking.json
+
+          EXIT_CODE=$?
+
+          if [ "$EXIT_CODE" -eq 0 ]; then
+            echo "Expected breaking schema check to fail, but it passed."
+            exit 1
+          fi
+
+          echo "Breaking schema was detected as expected."

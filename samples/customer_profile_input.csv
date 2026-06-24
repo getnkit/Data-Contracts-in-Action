@@ -1,0 +1,6 @@
+customer_id,customer_name,email,status,updated_at
+C001,Alice Wong,alice@example.com,ACTIVE,2026-01-01T08:00:00Z
+C002,Bob Lee,,ACTIVE,2026-01-01T08:10:00Z
+C003,Nina Kim,nina@example.com,UNKNOWN,2026-01-01T08:20:00Z
+,Cathy Chen,cathy@example.com,INACTIVE,2026-01-01T08:30:00Z
+C004,Max Tan,max@example.com,INACTIVE,2026-01-01T08:40:00Z

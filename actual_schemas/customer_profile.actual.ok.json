@@ -1,0 +1,12 @@
+{
+  "source_system": "customer_app",
+  "source_object": "customer_profile",
+  "columns": [
+    {"name": "customer_id", "type": "string", "nullable": false},
+    {"name": "customer_name", "type": "string", "nullable": false},
+    {"name": "email", "type": "string", "nullable": true},
+    {"name": "status", "type": "string", "nullable": false},
+    {"name": "updated_at", "type": "timestamp", "nullable": false},
+    {"name": "source_system", "type": "string", "nullable": true}
+  ]
+}
